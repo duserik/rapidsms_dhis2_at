@@ -18,7 +18,7 @@ from celery.task import Task, task
 
 HMIS033B_REPORT_XML_TEMPLATE      = "h033b_reporter.xml"
 DATA_VALUE_SETS_URL               = u'/api/dataValueSets'
-DEFAULT_ORG_UNIT_ID_SCHEME        = u'uuid'
+DEFAULT_ORG_UNIT_ID_SCHEME        = u'uid'
 ISO_8601_UTC_FORMAT               = u'%s-%s-%sT%s:%s:%sZ'
 HMIS_033B_PERIOD_ID               = u'%dW%d'
 ERROR_MESSAGE_NO_HMS_INDICATOR    = u'No valid HMS033b indicators reported for the submission.'
@@ -134,12 +134,12 @@ class H033B_Reporter(object):
   
   def get_reports_data_for_submission(self,submission,orgUnitIdScheme=DEFAULT_ORG_UNIT_ID_SCHEME):
     orgUnit = submission.facility
-    fred_map = FredFacilityDetail.objects.filter(uuid=orgUnit)
+    fred_map = FredFacilityDetail.objects.filter(uuid=orgUnit) # check this function 
     if not (fred_map  and fred_map[0].h033b):
       raise FacilityError(ERROR_MESSAGE_NO_HMS_FACILITY, orgUnit.id)
     
     data = {}
-    data['orgUnit']           = orgUnit.uuid
+    data['orgUnit']           = orgUnit.id
     data['completeDate']      = self.get_utc_time_iso8601(submission.created)
     data['period']            = self.get_period_id_for_submission(submission.created)
     data['orgUnitIdScheme']   = orgUnitIdScheme
